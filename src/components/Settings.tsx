@@ -116,13 +116,14 @@ const AdminPanel: React.FC = () => {
     try {
       const imageUrl = await uploadToCloudinary(logoFile);
       
+      // FIX: Properly update only the logoUrl while preserving other data
       const updatedConfig = {
-        ...appConfig,
+        ...appConfig, // Keep all existing data
         logoUrl: imageUrl
       };
       
       await set(ref(database, 'appConfig'), updatedConfig);
-      setAppConfig(updatedConfig);
+      // Don't setAppConfig here - let the Firebase listener update it
       setLogoFile(null);
       setMessage("Logo uploaded successfully to Cloudinary!");
     } catch (error) {
@@ -163,13 +164,14 @@ const AdminPanel: React.FC = () => {
         setUploadProgress(Math.round(((i + 1) / sliderFiles.length) * 100));
       }
 
+      // FIX: Properly update only sliderImages while preserving other data
       const updatedConfig = {
-        ...appConfig,
+        ...appConfig, // Keep all existing data
         sliderImages: uploadedImages
       };
       
       await set(ref(database, 'appConfig'), updatedConfig);
-      setAppConfig(updatedConfig);
+      // Don't setAppConfig here - let the Firebase listener update it
       setSliderFiles([]);
       setUploadProgress(0);
       setMessage(`${sliderFiles.length} slider images uploaded successfully!`);
@@ -193,13 +195,14 @@ const AdminPanel: React.FC = () => {
           order: index
         }));
       
+      // FIX: Properly update only sliderImages while preserving other data
       const updatedConfig = {
-        ...appConfig,
+        ...appConfig, // Keep all existing data
         sliderImages: updatedSliderImages
       };
       
       await set(ref(database, 'appConfig'), updatedConfig);
-      setAppConfig(updatedConfig);
+      // Don't setAppConfig here - let the Firebase listener update it
       setMessage("Slider image removed successfully!");
     } catch (error) {
       console.error("Error removing slider image:", error);
@@ -228,13 +231,14 @@ const AdminPanel: React.FC = () => {
         order: index
       }));
 
+      // FIX: Properly update only sliderImages while preserving other data
       const updatedConfig = {
-        ...appConfig,
+        ...appConfig, // Keep all existing data
         sliderImages: reorderedImages
       };
       
       await set(ref(database, 'appConfig'), updatedConfig);
-      setAppConfig(updatedConfig);
+      // Don't setAppConfig here - let the Firebase listener update it
       setMessage(`Slider image moved ${direction} successfully!`);
     } catch (error) {
       console.error("Error moving slider image:", error);
@@ -251,6 +255,7 @@ const AdminPanel: React.FC = () => {
     }
 
     try {
+      // FIX: Send the complete appConfig to Firebase
       await set(ref(database, 'appConfig'), appConfig);
       setMessage("App name updated successfully!");
     } catch (error) {
@@ -263,6 +268,7 @@ const AdminPanel: React.FC = () => {
 
   const handleSupportTutorialUpdate = async () => {
     try {
+      // FIX: Send the complete appConfig to Firebase
       await set(ref(database, 'appConfig'), appConfig);
       setMessage("Support & Tutorial settings updated successfully!");
     } catch (error) {
@@ -326,13 +332,14 @@ const AdminPanel: React.FC = () => {
     if (!confirm("Are you sure you want to remove all slider images?")) return;
     
     try {
+      // FIX: Properly update only sliderImages while preserving other data
       const updatedConfig = {
-        ...appConfig,
+        ...appConfig, // Keep all existing data
         sliderImages: []
       };
       
       await set(ref(database, 'appConfig'), updatedConfig);
-      setAppConfig(updatedConfig);
+      // Don't setAppConfig here - let the Firebase listener update it
       setMessage("All slider images removed successfully!");
     } catch (error) {
       console.error("Error clearing slider images:", error);
@@ -382,9 +389,13 @@ const AdminPanel: React.FC = () => {
         <div className="bg-yellow-500/20 border border-yellow-500 rounded-lg p-4 mb-6">
           <p className="text-yellow-200 text-sm">
             DB Connected: {database ? 'Yes' : 'No'}<br />
+            Config Loaded: {appConfig ? 'Yes' : 'No'}<br />
+            Logo URL: {appConfig.logoUrl ? 'Set' : 'Not set'}<br />
+            Slider Images: {(appConfig.sliderImages || []).length}
           </p>
         </div>
 
+        {/* Rest of your JSX remains the same */}
         {/* Logo Upload Section */}
         <div className="bg-gray-800 rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4 text-blue-300">Upload Logo to Cloudinary</h2>
@@ -442,7 +453,6 @@ const AdminPanel: React.FC = () => {
           </button>
         </div>
 
-        {/* Rest of your existing JSX remains the same */}
         {/* Slider Images Section */}
         <div className="bg-gray-800 rounded-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
